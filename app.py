@@ -73,32 +73,32 @@ def main():
         st.image("logo_uns.png", width=100)
     
     st.title("Sistem Reasoning & Searching Anjuran Pemupukan")
-    st.markdown("Aplikasi kecerdasan buatan untuk optimasi dosis dan biaya pupuk komoditas pertanian.")
+    st.markdown("**Aplikasi kecerdasan buatan untuk optimasi dosis dan biaya pupuk komoditas pertanian.**")
     st.divider()
 
     # Layout Kolom Input
     col1, col2 = st.columns(2)
 
     with col1:
-        st.subheader("Parameter Lahan")
+        st.subheader("Parameter Lahan", help="Tentukan jenis tanaman dan lokasi lahan untuk mendapatkan rekomendasi spesifik.")
         komoditas_list = list(rules["tanaman"].keys())
-        komoditas = st.selectbox("Pilih Komoditas", komoditas_list, format_func=lambda x: x.replace('_', ' ').title())
+        komoditas = st.selectbox("Pilih Komoditas", komoditas_list, format_func=lambda x: x.replace('_', ' ').title(), help="Pilih jenis tanaman yang akan ditanam pada lahan Anda.")
         
         kabupaten_list = list(rules["tanaman"][komoditas].keys())
-        kabupaten = st.selectbox("Pilih Kabupaten/Kota", kabupaten_list)
+        kabupaten = st.selectbox("Pilih Kabupaten/Kota", kabupaten_list, help="Pilih kabupaten/kota lokasi lahan untuk menyesuaikan standar anjuran lokal.")
         
         kecamatan_list = list(rules["tanaman"][komoditas][kabupaten].keys())
-        kecamatan = st.selectbox("Pilih Kecamatan", kecamatan_list)
+        kecamatan = st.selectbox("Pilih Kecamatan", kecamatan_list, help="Pilih kecamatan dari lokasi lahan Anda secara spesifik.")
 
     with col2:
-        st.subheader("Kondisi Ekstra")
-        luas_lahan = st.number_input("Luas Lahan (meter persegi)", min_value=1.0, value=5000.0, step=100.0)
+        st.subheader("Kondisi Ekstra", help="Kondisi tambahan yang mempengaruhi perhitungan dosis pupuk.")
+        luas_lahan = st.number_input("Luas Lahan (meter persegi)", min_value=1.0, value=5000.0, step=100.0, help="Masukkan total luas lahan pertanian Anda dalam satuan meter persegi (m²).")
         
         kondisi_list = list(rules["modifikator_tanah"].keys())
-        kondisi = st.selectbox("Kondisi Tanah", kondisi_list, format_func=lambda x: x.title())
+        kondisi = st.selectbox("Kondisi Tanah", kondisi_list, format_func=lambda x: x.title(), help="Pilih kondisi kesuburan atau riwayat tanah saat ini untuk penyesuaian (faktor koreksi) dosis pupuk.")
 
     # Tombol Eksekusi
-    if st.button("Hitung Rekomendasi", type="primary", use_container_width=True):
+    if st.button("Hitung Rekomendasi", type="primary", use_container_width=True, help="Klik untuk memulai perhitungan dosis dan estimasi biaya pupuk."):
         st.divider()
         
         # --- PROSES INFERENSI ---
@@ -109,7 +109,7 @@ def main():
         total_pupuk = {}
         total_biaya_keseluruhan = 0
 
-        st.subheader(f"Hasil Analisis: {kecamatan}, {kabupaten}")
+        st.subheader(f"Hasil Analisis: {kecamatan}, {kabupaten}", help="Rekomendasi ini dihitung berdasarkan luas lahan, jenis tanah, dan letak geografis yang Anda masukkan.")
         
         col_res1, col_res2 = st.columns(2)
         
@@ -129,12 +129,12 @@ def main():
                         total_biaya_keseluruhan += subtotal_biaya
                         
                         for item in kombinasi:
-                            st.write(f"- {item['jumlah']}x {item['id']} ({item['ukuran']}kg) : Rp {item['subtotal']:,.0f}")
+                            st.write(f"- {item['jumlah']}x **{item['id']}** ({item['ukuran']}kg) : Rp {item['subtotal']:,.0f}")
                         st.markdown(f"**Subtotal {jenis_pupuk.upper()}: Rp {subtotal_biaya:,.0f}**")
                     else:
                         st.error(f"Katalog harga untuk {jenis_pupuk} tidak ditemukan.")
             
-            st.success(f"TOTAL ESTIMASI BIAYA: Rp {total_biaya_keseluruhan:,.0f}")
+            st.success(f"**TOTAL ESTIMASI BIAYA: Rp {total_biaya_keseluruhan:,.0f}**")
 
         # Kolom Kanan: Jadwal Tabur
         with col_res2:
